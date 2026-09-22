@@ -1,0 +1,33 @@
+name: Publicar painel Mais Fit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 17 * * 1-5'
+    - cron: '0 20 * * 1-5'
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install google-api-python-client google-auth openpyxl
+
+      - name: Rodar o robo
+        env:
+          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_SA_KEY }}
+        run: python scripts/fetch_and_build.py
+
+      - name: Publicar dados.json novo
+        run: |
