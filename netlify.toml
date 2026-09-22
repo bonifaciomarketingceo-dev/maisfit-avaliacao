@@ -1,0 +1,4 @@
+# Publica a pasta raiz do repositorio (o index.html + dados.json).
+[build]
+  publish = "."
+  command = ""
