@@ -3,8 +3,8 @@ name: Publicar painel Mais Fit
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 17 * * 1-5'
-    - cron: '0 20 * * 1-5'
+    - cron: '10 17 * * 1-5'
+    
 
 permissions:
   contents: write
