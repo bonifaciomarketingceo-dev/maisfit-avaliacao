@@ -137,8 +137,7 @@ body{background:linear-gradient(180deg,#0A1A3F 0%,#0D2257 100%);background-attac
   <div class="strip" id="ac-strip"></div>
 
   <div class="sec">Total do mês (Outubro)</div>
-  <div class="kpis">
-    <div class="kpi"><div class="v">17<small style="font-size:14px;opacity:.75"> de 18</small></div><div class="l">Dias com registro (dia 10 foi catraca livre)</div></div>
+  <div class="kpis" id="ac-mesagg"></div>
     <div class="kpi"><div class="v">8.836</div><div class="l">Passagens no mês</div></div>
     <div class="kpi"><div class="v">217</div><div class="l">Média de alunos/dia</div></div>
   </div>
@@ -313,6 +312,12 @@ function renderCatAgg(){
   var el=document.getElementById('ac-agg'); if(!el) return;
   var keys=Object.keys(CAT).map(Number).sort(function(a,b){return a-b;});
   var days=keys.map(function(k){return CAT[k];}).filter(function(d){return d&&!d.incompleto;});
+  (function(){var tp=0,us=0;days.forEach(function(d){tp+=d.pass;us+=d.uni;});
+   var md=days.length?Math.round(us/days.length):0, dc=days.length, dt=Object.keys(CAT).length;
+   var me=document.getElementById('ac-mesagg');
+   if(me) me.innerHTML='<div class="kpi"><div class="v">'+dc+'<small style="font-size:14px;opacity:.75"> de '+dt+'</small></div><div class="l">Dias com registro (dia 10 foi catraca livre)</div></div>'
+     +'<div class="kpi"><div class="v">'+tp.toLocaleString("pt-BR")+'</div><div class="l">Passagens no m\u00eas</div></div>'
+     +'<div class="kpi"><div class="v">'+md+'</div><div class="l">M\u00e9dia de alunos/dia</div></div>';})();
   var lastOf=null; keys.forEach(function(k){if(CAT[k]&&CAT[k].oficial&&!CAT[k].incompleto)lastOf=k;});
   var lastDay=lastOf?CAT[lastOf]:null;
   var man=0,tar=0,noi=0;
