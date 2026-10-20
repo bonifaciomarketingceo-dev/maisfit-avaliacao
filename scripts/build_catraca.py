@@ -218,8 +218,14 @@ def fn_day(name):
     return None
 
 # ---------- montar o bloco catraca ----------
-def build_catraca(reports, prev_last_seen=None):   # reports: list of (name, bytes)
-    cat = dict(SEED_0113)      # dias 1..13
+def build_catraca(reports, prev_last_seen=None, prev_cat=None):   # reports: list of (name, bytes)
+    cat = dict(SEED_0113)      # dias 1..13 (base embutida)
+    # mantem os dias oficiais (14+) ja calculados antes, mesmo que o relatorio
+    # daquele dia ja tenha saido da ENTRADA (a ENTRADA pode ser esvaziada):
+    if prev_cat:
+        for k, v in prev_cat.items():
+            if k not in SEED_0113 and isinstance(v, dict) and v.get("oficial"):
+                cat[k] = v
     for name, data in reports:
         if not is_catraca_report(name): 
             continue
@@ -305,7 +311,17 @@ def main():
         except Exception:
             prev_last_seen = None
 
-    cat, meta, last_seen = build_catraca(reports, prev_last_seen)
+    # carrega o dados.json ANTES, pra reaproveitar os dias de catraca ja
+    # calculados (assim a ENTRADA pode ser esvaziada sem perder o historico):
+    dados = None; prev_cat = None
+    if dados_path and os.path.exists(dados_path):
+        try:
+            dados = json.load(open(dados_path, encoding="utf-8"))
+            prev_cat = dados.get("catraca")
+        except Exception:
+            dados = None; prev_cat = None
+
+    cat, meta, last_seen = build_catraca(reports, prev_last_seen, prev_cat)
 
     # salva a memoria do ultimo dia de cada aluno (pro recalculo diario)
     if last_seen is not None:
@@ -314,8 +330,7 @@ def main():
         print("last_seen.json atualizado: %d alunos, sumindo=%s" %
               (len(last_seen), meta["sumindo"]))
 
-    if dados_path and os.path.exists(dados_path):
-        dados=json.load(open(dados_path, encoding="utf-8"))
+    if dados is not None:
         dados["catraca"]=cat
         dados["catracaMeta"]=meta
         json.dump(dados, open(dados_path,"w",encoding="utf-8"),
