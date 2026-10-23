@@ -1,0 +1,768 @@
+{
+ "meta": {
+  "posicaoSistema": "2026-10-23",
+  "totalSistema": 1189.32,
+  "atualizadoEm": "2026-10-23",
+  "regraVenc": "Pagamentos nos dias 10 e 25"
+ },
+ "compras": [
+  {
+   "data": "2026-08-11",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "v": 29.29
+    },
+    {
+     "cat": "frutas",
+     "v": 115.01
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 144.3,
+   "venc": "2026-08-25",
+   "id": "c20260811"
+  },
+  {
+   "data": "2026-08-12",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 89.88
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 89.88,
+   "venc": "2026-08-25",
+   "id": "c20260812"
+  },
+  {
+   "data": "2026-08-13",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 117.66
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 117.66,
+   "venc": "2026-08-25",
+   "id": "c20260813"
+  },
+  {
+   "data": "2026-08-18",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 66.01
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 66.01,
+   "venc": "2026-08-25",
+   "id": "c20260818"
+  },
+  {
+   "data": "2026-08-19",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "v": 24.21
+    },
+    {
+     "cat": "frutas",
+     "v": 67.85
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 92.06,
+   "venc": "2026-08-25",
+   "id": "c20260819a"
+  },
+  {
+   "data": "2026-08-19",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 37.23
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 37.23,
+   "venc": "2026-08-25",
+   "id": "c20260819b"
+  },
+  {
+   "data": "2026-08-20",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "limpeza",
+     "desc": "bom ar",
+     "v": 13.11
+    },
+    {
+     "cat": "agua",
+     "v": 31.33
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 44.44,
+   "venc": "2026-08-25",
+   "id": "c20260820"
+  },
+  {
+   "data": "2026-08-21",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "acucar",
+     "v": 10.5
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 10.5,
+   "venc": "2026-08-25",
+   "id": "c20260821"
+  },
+  {
+   "data": "2026-08-26",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 53.01
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 53.01,
+   "venc": "2026-08-25",
+   "id": "c20260826a"
+  },
+  {
+   "data": "2026-08-26",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "limpeza",
+     "desc": "saco de lixo",
+     "v": 38.97
+    },
+    {
+     "cat": "frutas",
+     "v": 37.4
+    }
+   ],
+   "obs": "No sistema do Cristal consta em 27/08",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 76.37,
+   "venc": "2026-08-25",
+   "id": "c20260826b"
+  },
+  {
+   "data": "2026-08-27",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 77.01
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 77.01,
+   "venc": "2026-08-25",
+   "id": "c20260827"
+  },
+  {
+   "data": "2026-09-02",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 166.83
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 166.83,
+   "venc": "2026-09-10",
+   "id": "c20260902"
+  },
+  {
+   "data": "2026-09-03",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 66.58
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 66.58,
+   "venc": "2026-09-10",
+   "id": "c20260903"
+  },
+  {
+   "data": "2026-09-04",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "desc": "água com gás 24 un.",
+     "v": 34.02
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 34.02,
+   "venc": "2026-09-10",
+   "id": "c20260904a"
+  },
+  {
+   "data": "2026-09-04",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "pilhas",
+     "v": 19.2
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 19.2,
+   "venc": "2026-09-10",
+   "id": "c20260904b"
+  },
+  {
+   "data": "2026-09-10",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 61.55
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 61.55,
+   "venc": "2026-09-10",
+   "id": "c20260910a"
+  },
+  {
+   "data": "2026-09-10",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "v": 28.62
+    },
+    {
+     "cat": "frutas",
+     "v": 96.27
+    }
+   ],
+   "obs": "Desconto de 25% aplicado a cada item",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 124.89,
+   "venc": "2026-09-10",
+   "id": "c20260910b"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "limpeza",
+     "desc": "saco alvejado",
+     "v": 13.49
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 13.49,
+   "venc": "2026-09-25",
+   "id": "c20260916"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 108.24
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 108.24,
+   "venc": "2026-09-25",
+   "id": "c20260916b"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 44.21
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 44.21,
+   "venc": "2026-09-25",
+   "id": "c20260916c"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 17.54
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 17.54,
+   "venc": "2026-09-25",
+   "id": "c20260916d"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 25.26
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 25.26,
+   "venc": "2026-09-25",
+   "id": "c20260916e"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 599.64
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 599.64,
+   "venc": "2026-09-25",
+   "id": "c20260916f"
+  },
+  {
+   "data": "2026-09-16",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "título do sistema, sem notinha",
+     "v": 8.92
+    }
+   ],
+   "obs": "Aparece só na tela do sistema do Cristal (25/09); itens não detalhados",
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 8.92,
+   "venc": "2026-09-25",
+   "id": "c20260916g"
+  },
+  {
+   "data": "2026-09-23",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "v": 155.55
+    }
+   ],
+   "pagoEm": "2026-09-24",
+   "status": "pago",
+   "valor": 155.55,
+   "venc": "2026-09-25",
+   "id": "c20260923"
+  },
+  {
+   "data": "2026-09-25",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "energético Monster (18 un.)",
+     "v": 164.13
+    },
+    {
+     "cat": "outros",
+     "desc": "isotônico Gatorade (14 un.)",
+     "v": 66.18
+    },
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 24 un. (com e sem gás)",
+     "v": 31.32
+    }
+   ],
+   "obs": "Título 804898. Sistema do Cristal mostra vencimento 25/10; pela nossa regra vai pro dia 10/10 (o ciclo de 25/09 já tinha sido pago em 24/09).",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 261.63,
+   "venc": "2026-10-10",
+   "id": "c20260925"
+  },
+  {
+   "data": "2026-09-30",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "maçã gala",
+     "v": 132.51
+    }
+   ],
+   "obs": "Título 805226. Sistema do Cristal mostra vencimento 30/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 132.51,
+   "venc": "2026-10-10",
+   "id": "c20260930"
+  },
+  {
+   "data": "2026-10-01",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana prata, banana nanica, maçã gala",
+     "v": 70.31
+    }
+   ],
+   "obs": "Título 805273. Sistema do Cristal mostra vencimento 31/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 70.31,
+   "venc": "2026-10-10",
+   "id": "c20261001a"
+  },
+  {
+   "data": "2026-10-01",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana prata, maçã gala",
+     "v": 57.55
+    }
+   ],
+   "obs": "Título 805304. Sistema do Cristal mostra vencimento 31/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 57.55,
+   "venc": "2026-10-10",
+   "id": "c20261001b"
+  },
+  {
+   "data": "2026-10-06",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "limpeza",
+     "desc": "odorizador de ar 250 g (chá branco)",
+     "v": 14.25
+    }
+   ],
+   "obs": "NFC-e 130773. Título 805606. Preço R$ 18,99 com desconto de R$ 4,74 (pago R$ 14,25). Sistema do Cristal mostra vencimento 05/11; pela nossa regra vence 10/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 14.25,
+   "venc": "2026-10-10",
+   "id": "c20261006"
+  },
+  {
+   "data": "2026-10-07",
+   "fonte": "notinha",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana nanica, maçã gala",
+     "v": 139.53
+    }
+   ],
+   "obs": "NFC-e 264249 (crediário). Total R$ 186,04 com desconto de R$ 46,51 (pago R$ 139,53). Ainda sem tela do sistema do Cristal; pela nossa regra vence 10/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 139.53,
+   "venc": "2026-10-10",
+   "id": "c20261007"
+  },
+  {
+   "data": "2026-10-08",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana nanica (3 pesagens) R$ 32,87 e maçã gala R$ 55,03",
+     "v": 87.9
+    },
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 500 ml: 24 sem gás R$ 28,62 e 24 com gás R$ 34,02",
+     "v": 62.64
+    }
+   ],
+   "obs": "Título 805765, série 210. Valor na tela R$ 150,54 (o nome do arquivo no Drive diz R$ 158,54, mas a tela e a soma dos itens dão R$ 150,54). Sistema do Cristal mostra vencimento 07/11; pela nossa regra vence 10/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 150.54,
+   "venc": "2026-10-10",
+   "id": "c20261008"
+  },
+  {
+   "data": "2026-10-10",
+   "fonte": "notinha",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana prata, maçã gala",
+     "v": 120.47
+    }
+   ],
+   "obs": "NFC-e 9139 série 210 (crediário), 10/10 08:50. Total R$ 160,62 com desconto de R$ 40,15 (pago R$ 120,47). Ainda sem tela do sistema do Cristal; pela nossa regra vence 10/10.",
+   "pagoEm": "2026-10-14",
+   "status": "pago",
+   "valor": 120.47,
+   "venc": "2026-10-10",
+   "id": "c20261010"
+  },
+  {
+   "data": "2026-10-14",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana nanica, maçã fuji",
+     "v": 126.69
+    }
+   ],
+   "obs": "Título 806119 série 305, emissão 14/10. Banana nanica R$ 51,01 + maçã fuji R$ 75,68. Sistema do Cristal mostra vencimento 13/11; pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 126.69,
+   "venc": "2026-10-25",
+   "id": "c20261014"
+  },
+  {
+   "data": "2026-10-15",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "limpeza",
+     "desc": "vassoura Águia piaçava",
+     "v": 28.5
+    },
+    {
+     "cat": "outros",
+     "desc": "suporte de coador e coador de papel Melitta 102",
+     "v": 14.23
+    }
+   ],
+   "obs": "NFC-e 136873 série 201 (crediário), 15/10 07:26, emitida em contingência. Total R$ 56,97 com desconto de R$ 14,24 (pago R$ 42,73); desconto aplicado proporcionalmente nos itens. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 42.73,
+   "venc": "2026-10-25",
+   "id": "c20261015a"
+  },
+  {
+   "data": "2026-10-15",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana prata, maçã gala",
+     "v": 60.78
+    }
+   ],
+   "obs": "NFC-e 15873 série 7 (crediário), 15/10 11:48. Total R$ 81,03 com desconto de R$ 20,25 (pago R$ 60,78). Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 60.78,
+   "venc": "2026-10-25",
+   "id": "c20261015b"
+  },
+  {
+   "data": "2026-10-15",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 500 ml com gás (12 un.)",
+     "v": 17.01
+    },
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 500 ml sem gás (24 un.)",
+     "v": 28.62
+    }
+   ],
+   "obs": "Título 806166 série 7, emissão 15/10. Sistema do Cristal mostra vencimento 14/11; pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 45.63,
+   "venc": "2026-10-25",
+   "id": "c20261015c"
+  },
+  {
+   "data": "2026-10-19",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 500 ml sem gás (12 un.)",
+     "v": 14.31
+    },
+    {
+     "cat": "agua",
+     "desc": "água Serra Morena 500 ml com gás (12 un.)",
+     "v": 17.01
+    },
+    {
+     "cat": "outros",
+     "desc": "Gatorade 500 ml (11 un.: 6 tangerina + 5 morango/maracujá)",
+     "v": 52.72
+    },
+    {
+     "cat": "outros",
+     "desc": "energético Monster 473 ml (30 un., 5 sabores)",
+     "v": 281.03
+    }
+   ],
+   "obs": "NFC-e 132525 série 303 (crediário), 19/10 14:50. Total R$ 486,75 com desconto de R$ 121,68 (pago R$ 365,07); desconto (25%) aplicado proporcionalmente nos itens. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 365.07,
+   "venc": "2026-10-25",
+   "id": "c20261019"
+  },
+  {
+   "data": "2026-10-20",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "bananinha doce Natércia 30 g (96 un.)",
+     "v": 143.28
+    }
+   ],
+   "obs": "NFC-e 10623 série 210 (crediário), 20/10 14:58. Total R$ 191,04 com desconto de R$ 47,76 (25%); pago R$ 143,28. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 143.28,
+   "venc": "2026-10-25",
+   "id": "c20261020a"
+  },
+  {
+   "data": "2026-10-20",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "outros",
+     "desc": "chiclete Trident melancia sem açúcar (21 un.)",
+     "v": 51.82
+    },
+    {
+     "cat": "outros",
+     "desc": "chiclete Trident morango (21 un.)",
+     "v": 51.82
+    },
+    {
+     "cat": "outros",
+     "desc": "chiclete Trident tutti frutti (21 un.)",
+     "v": 51.82
+    },
+    {
+     "cat": "outros",
+     "desc": "chiclete Trident hortelã sem açúcar (21 un.)",
+     "v": 51.81
+    }
+   ],
+   "obs": "NFC-e 10638 série 210 (crediário), 20/10 15:50. Total R$ 276,36 com desconto de R$ 69,09 (25%) aplicado proporcionalmente; pago R$ 207,27. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 207.27,
+   "venc": "2026-10-25",
+   "id": "c20261020b"
+  },
+  {
+   "data": "2026-10-21",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana nanica (4 pacotes, 7,34 kg)",
+     "v": 49.5
+    },
+    {
+     "cat": "frutas",
+     "desc": "maçã gala nacional (4 pacotes, 8,00 kg)",
+     "v": 65.94
+    }
+   ],
+   "obs": "NFC-e 16263 série 7 (crediário), 21/10 16:21. Total R$ 153,91 com desconto de R$ 38,47 (25%) aplicado proporcionalmente; pago R$ 115,44. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 115.44,
+   "venc": "2026-10-25",
+   "id": "c20261021"
+  },
+  {
+   "data": "2026-10-22",
+   "fonte": "sistema",
+   "itens": [
+    {
+     "cat": "frutas",
+     "desc": "banana nanica (3 pacotes, 5,80 kg)",
+     "v": 39.07
+    },
+    {
+     "cat": "frutas",
+     "desc": "maçã gala nacional (2 pacotes, 5,26 kg)",
+     "v": 43.36
+    }
+   ],
+   "obs": "NFC-e 137616 série 201 (crediário), 22/10 13:31. Total R$ 109,90 com desconto de R$ 27,47 (25%) aplicado proporcionalmente; pago R$ 82,43. Pela nossa regra vence 25/10.",
+   "status": "aberto",
+   "valor": 82.43,
+   "venc": "2026-10-25",
+   "id": "c20261022"
+  }
+ ]
+}
