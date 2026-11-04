@@ -9,23 +9,36 @@ no dados.json do repositorio (que o robo da avaliacao ja gerou).
 Roda no GitHub Actions depois do publish.yml. Usa a mesma conta de servico (GOOGLE_SA_KEY).
 NAO mexe na avaliacao: so acrescenta as chaves da catraca no dados.json.
 
+>>> MUDANCA 04/11/2026 (destrava a virada de mes) <<<
+- O mes/ano NAO e mais chumbado. E detectado automaticamente pelo relatorio de dia
+  unico MAIS RECENTE da ENTRADA (detect_target_ym).
+- A base estimada dos dias 01-13 (SEED_0113) e a meta embutida so valem para OUTUBRO/2026.
+  Em qualquer outro mes o dia a dia comeca vazio e vem so dos relatorios oficiais.
+- O historico de dias oficiais (catraca_hist.json) passa a guardar o mes de referencia
+  ("ym"), pra NAO misturar o dia 14 de outubro com o dia 14 de novembro. Quando o mes
+  vira, o historico comeca limpo automaticamente.
+
 Modo teste local:  python3 build_catraca.py --local <pasta_com_relatorios> [dados.json]
 """
 import os, sys, io, re, json, datetime, unicodedata, hashlib
 
 ENTRADA_FOLDER_ID = "1WDVNwprb6h9z_WhxhtGXFG6JlTJySiw9"  # pasta ENTRADA (mesma da avaliacao)
-MES = 10            # Outubro (o painel atual é de Outubro)
-ANO = 2026
+MES = None          # detectado automaticamente em main() (mes do relatorio mais recente)
+ANO = None          # detectado automaticamente em main()
 DADOS_PATH = "dados.json"
 LAST_SEEN_PATH = "last_seen.json"   # memoria do ultimo dia de cada aluno (fica no repo)
 HIST_PATH = "catraca_hist.json"     # historico dos dias oficiais (14+); arquivo proprio que o
                                     # publish.yml da avaliacao NAO sobrescreve (so o dados.json e sobrescrito)
 
 SEED = json.loads(r"""{"seed":{"1":{"rot":"01/10/2026 &middot; Quinta-feira","uni":307,"pass":713,"med":"2,3","pico":"19h","perfil":[["Plano não informado na catraca",255],["Plano Família",26],["Autorizado (Xeú)",15],["Anual/Recorrente",6],["Ex-Cross",5]],"horas":{"5":45,"6":44,"7":59,"8":57,"9":61,"10":26,"11":35,"12":22,"13":16,"14":19,"15":31,"16":44,"17":52,"18":58,"19":75,"20":53,"21":16,"22":0,"23":0}},"2":{"rot":"02/10/2026 &middot; Sexta-feira","uni":269,"pass":631,"med":"2,3","pico":"18h","perfil":[["Plano não informado na catraca",222],["Plano Família",21],["Anual/Recorrente",12],["Autorizado (Xeú)",9],["Ex-Cross",5]],"horas":{"5":47,"6":51,"7":62,"8":43,"9":43,"10":19,"11":39,"12":21,"13":19,"14":14,"15":26,"16":36,"17":55,"18":68,"19":45,"20":33,"21":10,"22":0,"23":0}},"3":{"rot":"03/10/2026 &middot; Sábado","uni":81,"pass":190,"med":"2,3","pico":"11h","perfil":[["Plano não informado na catraca",64],["Autorizado (Xeú)",6],["Anual/Recorrente",5],["Plano Família",4],["Ex-Cross",2]],"horas":{"5":0,"6":1,"7":10,"8":30,"9":41,"10":49,"11":56,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":2,"19":0,"20":0,"21":0,"22":0,"23":0}},"4":{"rot":"04/10/2026 &middot; Domingo","uni":50,"pass":94,"med":"1,9","pico":"10h","perfil":[["Plano não informado na catraca",40],["Autorizado (Xeú)",6],["Plano Família",2],["Anual/Recorrente",2]],"horas":{"5":0,"6":1,"7":0,"8":16,"9":24,"10":32,"11":21,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"5":{"rot":"05/10/2026 &middot; Segunda-feira","uni":328,"pass":770,"med":"2,3","pico":"18h","perfil":[["Plano não informado na catraca",279],["Plano Família",20],["Anual/Recorrente",11],["Autorizado (Xeú)",10],["Ex-Cross",8]],"horas":{"5":38,"6":37,"7":55,"8":36,"9":38,"10":37,"11":35,"12":42,"13":26,"14":23,"15":43,"16":39,"17":68,"18":86,"19":73,"20":63,"21":31,"22":0,"23":0}},"6":{"rot":"06/10/2026 &middot; Terça-feira","uni":346,"pass":790,"med":"2,3","pico":"18h","perfil":[["Plano não informado na catraca",289],["Plano Família",28],["Autorizado (Xeú)",15],["Ex-Cross",7],["Anual/Recorrente",7]],"horas":{"5":51,"6":73,"7":60,"8":49,"9":39,"10":19,"11":39,"12":31,"13":18,"14":21,"15":41,"16":40,"17":70,"18":96,"19":70,"20":42,"21":31,"22":0,"23":0}},"7":{"rot":"07/10/2026 &middot; Quarta-feira","uni":323,"pass":791,"med":"2,4","pico":"18h","perfil":[["Plano não informado na catraca",267],["Plano Família",27],["Autorizado (Xeú)",12],["Anual/Recorrente",10],["Ex-Cross",7]],"horas":{"5":50,"6":50,"7":64,"8":42,"9":53,"10":31,"11":34,"12":26,"13":29,"14":40,"15":51,"16":46,"17":62,"18":73,"19":57,"20":68,"21":15,"22":0,"23":0}},"8":{"rot":"08/10/2026 &middot; Quinta-feira","uni":313,"pass":716,"med":"2,3","pico":"18h","perfil":[["Plano não informado na catraca",260],["Plano Família",24],["Autorizado (Xeú)",12],["Anual/Recorrente",9],["Ex-Cross",8]],"horas":{"5":43,"6":50,"7":63,"8":38,"9":39,"10":40,"11":41,"12":35,"13":30,"14":17,"15":47,"16":41,"17":57,"18":64,"19":47,"20":41,"21":23,"22":0,"23":0}},"9":{"rot":"09/10/2026 &middot; Sexta-feira","uni":239,"pass":517,"med":"2,2","pico":"17h","perfil":[["Plano não informado na catraca",194],["Plano Família",15],["Autorizado (Xeú)",15],["Anual/Recorrente",9],["Ex-Cross",6]],"horas":{"5":32,"6":41,"7":55,"8":51,"9":24,"10":28,"11":25,"12":21,"13":11,"14":12,"15":20,"16":43,"17":57,"18":42,"19":32,"20":20,"21":3,"22":0,"23":0}},"10":{"rot":"10/10/2026 &middot; Sábado","uni":4,"pass":19,"med":"4,8","pico":"6h","perfil":[["Aluno regular",3],["Funcionário/IF",1]],"horas":{"5":1,"6":6,"7":0,"8":0,"9":0,"10":0,"11":2,"12":5,"13":3,"14":0,"15":0,"16":0,"17":2,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"incompleto":true},"11":{"rot":"11/10/2026 &middot; Domingo","uni":49,"pass":144,"med":"2,9","pico":"10h","perfil":[["Plano não informado na catraca",38],["Plano Família",7],["Autorizado (Xeú)",3],["Ex-Cross",1]],"horas":{"5":0,"6":0,"7":0,"8":42,"9":30,"10":43,"11":27,"12":2,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"12":{"rot":"12/10/2026 &middot; Segunda-feira","uni":133,"pass":305,"med":"2,3","pico":"9h","perfil":[["Plano não informado na catraca",106],["Autorizado (Xeú)",12],["Plano Família",10],["Anual/Recorrente",4],["Ex-Cross",1]],"horas":{"5":0,"6":0,"7":6,"8":69,"9":86,"10":73,"11":55,"12":14,"13":2,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"13":{"rot":"13/10/2026 &middot; Terça-feira","uni":344,"pass":850,"med":"2,5","pico":"18h","perfil":[["Plano não informado na catraca",285],["Plano Família",23],["Autorizado (Xeú)",15],["Ex-Cross",11],["Anual/Recorrente",10]],"horas":{"5":54,"6":55,"7":62,"8":42,"9":42,"10":23,"11":47,"12":30,"13":22,"14":20,"15":40,"16":44,"17":72,"18":115,"19":71,"20":85,"21":26,"22":0,"23":0}}},"meta":{"p585":584,"sumindo":[530,9,70],"sumindoStatus":"oficial"}}""")
-SEED_0113 = SEED["seed"]      # dias 1..13 (estimativa) + dia 10 livre
-CATMETA   = SEED["meta"]      # p585, sumindo, sumindoStatus
+SEED_0113 = SEED["seed"]      # dias 1..13 (estimativa de OUTUBRO/2026) + dia 10 livre
+CATMETA   = SEED["meta"]      # p585, sumindo, sumindoStatus (fallback)
 
 WD = ["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"]
+
+def _seed_keys():
+    # A base 01-13 so existe para Outubro/2026. Em outro mes o dia a dia comeca vazio.
+    return set(SEED_0113) if (ANO, MES) == (2026, 10) else set()
 
 # ---------- nomes: normalizacao + membro/nao-membro ----------
 def _strip_accents(s):
@@ -219,17 +232,49 @@ def fn_day(name):
     if m and int(m.group(2)) == MES: return int(m.group(3))
     return None
 
+# ---------- DETECCAO AUTOMATICA do mes/ano alvo ----------
+def detect_target_ym(reports):
+    """Mes/ano = a MAIOR data entre os relatorios de catraca de DIA UNICO da ENTRADA.
+    Ignora relatorios de PERIODO ("NN a NN"). Usa a data do nome (YYYY-MM-DD) e,
+    se nao houver, as datas reais de dentro do arquivo. Retorna (ano, mes) ou None."""
+    dates = []
+    for name, data in reports:
+        if not is_catraca_report(name):
+            continue
+        if re.search(r'\d+\s*a\s*\d+', name):   # relatorio de PERIODO
+            continue
+        m = re.search(r'(\d{4})-(\d{2})-(\d{2})', name)   # data no nome do arquivo
+        if m:
+            try:
+                dates.append(datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3))))
+            except Exception:
+                pass
+            continue
+        # sem data no nome: usa as datas internas (Excel traz datas reais; PDF usa ano 2000 -> ignora)
+        try:
+            _of, times = parse_report(name, data)
+            for t in times:
+                if t.year >= 2025:
+                    dates.append(t.date())
+        except Exception:
+            pass
+    if not dates:
+        return None
+    mx = max(dates)
+    return (mx.year, mx.month)
+
 # ---------- montar o bloco catraca ----------
 def build_catraca(reports, prev_last_seen=None, prev_cat=None):   # reports: list of (name, bytes)
-    cat = dict(SEED_0113)      # dias 1..13 (base embutida)
-    # mantem os dias oficiais (14+) ja calculados antes, mesmo que o relatorio
+    seed_keys = _seed_keys()
+    cat = dict(SEED_0113) if seed_keys else {}    # Outubro: base 01-13; outro mes: vazio
+    # mantem os dias oficiais ja calculados antes (mesmo mes), mesmo que o relatorio
     # daquele dia ja tenha saido da ENTRADA (a ENTRADA pode ser esvaziada):
     if prev_cat:
         for k, v in prev_cat.items():
-            if k not in SEED_0113 and isinstance(v, dict) and v.get("oficial"):
+            if k not in seed_keys and isinstance(v, dict) and v.get("oficial"):
                 cat[k] = v
     for name, data in reports:
-        if not is_catraca_report(name): 
+        if not is_catraca_report(name):
             continue
         oficial, times = parse_report(name, data)
         if oficial is None:
@@ -281,7 +326,7 @@ def list_entrada(svc):
             fields="nextPageToken, files(id,name,mimeType)",
             pageSize=200, pageToken=page).execute()
         for f in resp.get("files",[]):
-            if not is_catraca_report(f["name"]): 
+            if not is_catraca_report(f["name"]):
                 continue
             fh=io.BytesIO()
             dl=MediaIoBaseDownload(fh, svc.files().get_media(fileId=f["id"]))
@@ -292,7 +337,24 @@ def list_entrada(svc):
         if not page: break
     return out
 
+# ---------- historico (catraca_hist.json) com mes de referencia ----------
+def read_hist():
+    """Retorna (ym, dias). Formato novo: {"ym":"AAAA-MM","dias":{...}}.
+    Formato antigo (so dias) e tratado como Outubro/2026."""
+    if not os.path.exists(HIST_PATH):
+        return None, {}
+    try:
+        raw = json.load(open(HIST_PATH, encoding="utf-8"))
+    except Exception:
+        return None, {}
+    if isinstance(raw, dict) and "dias" in raw:
+        return raw.get("ym"), (raw.get("dias") or {})
+    if isinstance(raw, dict):
+        return "2026-10", raw   # formato antigo = outubro
+    return None, {}
+
 def main():
+    global MES, ANO
     if len(sys.argv)>=3 and sys.argv[1]=="--local":
         folder=sys.argv[2]
         dados_path = sys.argv[3] if len(sys.argv)>3 else None
@@ -305,6 +367,21 @@ def main():
         svc=drive_service()
         reports=list_entrada(svc)
         dados_path=DADOS_PATH
+
+    # --- DETECTA o mes/ano alvo pelo relatorio mais recente da ENTRADA ---
+    hist_ym, hist_dias = read_hist()
+    ym = detect_target_ym(reports)
+    if ym is not None:
+        ANO, MES = ym
+    elif hist_ym:
+        ANO, MES = int(hist_ym[:4]), int(hist_ym[5:7])   # sem relatorio: segue o mes do historico
+    else:
+        ANO, MES = 2026, 10                              # ultimissimo fallback
+    cur_ym = "%04d-%02d" % (ANO, MES)
+    print("catraca: mes/ano alvo = %s" % cur_ym)
+
+    # So reaproveita o historico se for do MESMO mes; mes diferente -> comeca limpo
+    prev_cat = hist_dias if (hist_ym == cur_ym) else None
 
     prev_last_seen = None
     if os.path.exists(LAST_SEEN_PATH):
@@ -321,25 +398,16 @@ def main():
         except Exception:
             dados = None
 
-    # HISTORICO dos dias ja calculados vem do catraca_hist.json (arquivo PROPRIO, que o
-    # publish.yml da avaliacao NAO sobrescreve). Fallback: a catraca que estiver no dados.json.
-    prev_cat = None
-    if os.path.exists(HIST_PATH):
-        try:
-            prev_cat = json.load(open(HIST_PATH, encoding="utf-8"))
-        except Exception:
-            prev_cat = None
-    if not prev_cat and dados is not None:
-        prev_cat = dados.get("catraca")
-
     cat, meta, last_seen = build_catraca(reports, prev_last_seen, prev_cat)
 
-    # salva o historico dos dias oficiais (14+) num arquivo PROPRIO (sobrevive ao publish.yml)
-    hist = {k: v for k, v in cat.items()
-            if k not in SEED_0113 and isinstance(v, dict) and v.get("oficial")}
-    json.dump(hist, open(HIST_PATH, "w", encoding="utf-8"),
+    # salva o historico dos dias oficiais num arquivo PROPRIO, COM o mes de referencia
+    # (sobrevive ao publish.yml e nao mistura meses)
+    seed_keys = _seed_keys()
+    hist_novo = {k: v for k, v in cat.items()
+                 if k not in seed_keys and isinstance(v, dict) and v.get("oficial")}
+    json.dump({"ym": cur_ym, "dias": hist_novo}, open(HIST_PATH, "w", encoding="utf-8"),
               ensure_ascii=False, separators=(",",":"))
-    print("catraca_hist.json: %d dias oficiais (14+)" % len(hist))
+    print("catraca_hist.json (%s): %d dias oficiais" % (cur_ym, len(hist_novo)))
 
     # salva a memoria do ultimo dia de cada aluno (pro recalculo diario)
     if last_seen is not None:
