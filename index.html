@@ -138,9 +138,6 @@ body{background:linear-gradient(180deg,#0A1A3F 0%,#0D2257 100%);background-attac
 
   <div class="sec">Total do mês (Outubro)</div>
   <div class="kpis" id="ac-mesagg"></div>
-    <div class="kpi"><div class="v">8.836</div><div class="l">Passagens no mês</div></div>
-    <div class="kpi"><div class="v">217</div><div class="l">Média de alunos/dia</div></div>
-  </div>
 
   <div id="ac-agg"></div>
 
@@ -248,7 +245,7 @@ function renderPromo(promo){
     +`<div class="grid">${cards}</div>`;
 }
 
-fetch('./dados.json?v='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;render(DATA.atual);renderPromo(DATA.promo); if(d.catraca){for(var k in d.catraca)CAT[k]=d.catraca[k];} if(d.catracaMeta){for(var k in d.catracaMeta)CATMETA[k]=d.catracaMeta[k];} if(d.catraca||d.catracaMeta){try{acStrip();renderCatAgg();acRender(acLatest());}catch(e){}} }).catch(e=>{var a=document.getElementById('app');if(a)a.innerHTML='<div style="padding:24px;text-align:center;color:#AFC0E6">Não foi possível carregar os dados agora.</div>';});
+fetch('./dados.json?v='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;render(DATA.atual);renderPromo(DATA.promo); for(var k in CAT)delete CAT[k]; if(d.catraca){for(var k in d.catraca)CAT[k]=d.catraca[k];} if(d.catracaMeta){for(var k in d.catracaMeta)CATMETA[k]=d.catracaMeta[k];} try{acStrip();renderCatAgg();acMesFix();if(CAT[acLatest()])acRender(acLatest());}catch(e){} }).catch(e=>{var a=document.getElementById('app');if(a)a.innerHTML='<div style="padding:24px;text-align:center;color:#AFC0E6">Não foi possível carregar os dados agora.</div>';});
 </script>
 
 <div style="text-align:center;margin:24px 0 14px;padding-top:18px;border-top:1px solid var(--borda)">
@@ -307,6 +304,25 @@ function acStrip(){
     s.appendChild(el);}
 }
 
+function acMesFix(){
+  var v=document.getElementById('view-ac'); if(!v) return;
+  var ks=Object.keys(CAT).map(Number).filter(function(k){return CAT[k]&&CAT[k].rot;});
+  var NOMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(!ks.length){
+    var mh=document.getElementById('ac-mes'); if(mh) mh.innerHTML='Aguardando o 1º relatório do mês';
+    ['ac-big','k-uni','k-pass','k-med','k-pico'].forEach(function(i){var e=document.getElementById(i); if(e) e.textContent='—';});
+    var b=document.getElementById('bars'); if(b) b.innerHTML='';
+  }
+  var ref=ks.length?String(CAT[Math.max.apply(null,ks)].rot).split(' ')[0].split('/'):null;
+  var hj=new Date(), mm=ref?+ref[1]:hj.getMonth()+1, aa=ref?+ref[2]:hj.getFullYear(), nm=NOMES[mm-1];
+  if(nm) v.querySelectorAll('.sec').forEach(function(s){s.innerHTML=s.innerHTML.replace(/Outubro/g,nm);});
+  if(mm&&aa){var dim=new Date(aa,mm,0).getDate(); v.querySelectorAll('#ac-strip .dia').forEach(function(e){if(+e.dataset.d>dim) e.remove();});}
+  if(mm!==10){
+    var me=document.getElementById('ac-mesagg'); if(me) me.innerHTML=me.innerHTML.replace(' (dia 10 foi catraca livre)','');
+    v.querySelectorAll('#ac-agg .kpi').forEach(function(k){if(k.textContent.indexOf('Alunos únicos')>=0) k.remove();});
+    var n=v.querySelector('.acnota'); if(n) n.innerHTML='<b>Entradas/saídas:</b> a mesma pessoa pode passar várias vezes no dia. <b>Nomes não aparecem aqui</b> — ficam em arquivo privado.<br><br>Todos os números são <b>só de aluno</b> (o sistema da catraca não conta colaborador) e vêm do <b>relatório oficial</b> de acessos de cada dia. O painel atualiza sozinho quando o relatório do dia entra na pasta ENTRADA.';
+  }
+}
 function acLatest(){var m=0;for(var k in CAT){if(+k>m)m=+k;}return m||1;}
 function renderCatAgg(){
   var el=document.getElementById('ac-agg'); if(!el) return;
