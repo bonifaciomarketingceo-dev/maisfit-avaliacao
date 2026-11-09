@@ -178,8 +178,8 @@ def parse_excel_bytes(data):
             a = r[0] if r else None
             h = r[1] if r and len(r)>1 else None
             if isinstance(a,str):
-                m = re.search(r'total\s*:?\s*(\d+)\s*alunos', a, re.I)
-                if m: of = int(m.group(1))
+                m = re.search(r'total\s*(?:de\s*alunos\s*:?\s*(\d+)|:?\s*(\d+)\s*alunos)', a, re.I)
+                if m: of = int(m.group(1) or m.group(2))
             if isinstance(h, datetime.datetime): ts.append(h)
         per.append((of, ts))
     with_total = [p for p in per if p[0] is not None]
@@ -317,24 +317,59 @@ def drive_service():
         info, scopes=["https://www.googleapis.com/auth/drive.readonly"])
     return build("drive","v3",credentials=creds,cache_discovery=False)
 
-def list_entrada(svc):
-    from googleapiclient.http import MediaIoBaseDownload
+CATRACA_ARQUIVO_ID = "1KikZHm5XyqUA-MxWKpiTltKkEyxgVsmn"   # Mais Fit > Catraca (arquivo: AAAA/Mes)
+
+def _list_q(svc, q):
     out=[]; page=None
     while True:
-        resp = svc.files().list(
-            q="'%s' in parents and trashed=false" % ENTRADA_FOLDER_ID,
-            fields="nextPageToken, files(id,name,mimeType)",
-            pageSize=200, pageToken=page).execute()
-        for f in resp.get("files",[]):
-            if not is_catraca_report(f["name"]):
-                continue
-            fh=io.BytesIO()
-            dl=MediaIoBaseDownload(fh, svc.files().get_media(fileId=f["id"]))
-            done=False
-            while not done: _,done = dl.next_chunk()
-            out.append((f["name"], fh.getvalue()))
+        resp = svc.files().list(q=q, fields="nextPageToken, files(id,name,mimeType)",
+                                pageSize=200, pageToken=page).execute()
+        out += resp.get("files",[])
         page=resp.get("nextPageToken")
         if not page: break
+    return out
+
+def _download(svc, fid):
+    from googleapiclient.http import MediaIoBaseDownload
+    fh=io.BytesIO()
+    dl=MediaIoBaseDownload(fh, svc.files().get_media(fileId=fid))
+    done=False
+    while not done: _,done = dl.next_chunk()
+    return fh.getvalue()
+
+def _eh_arquivo_relatorio(f):
+    # so Excel/PDF de verdade (nunca planilha Google, que nao baixa por get_media)
+    return is_catraca_report(f["name"]) and not f.get("mimeType","").startswith("application/vnd.google-apps")
+
+def list_entrada(svc):
+    """Relatorios da ENTRADA + os ja ARQUIVADOS (Catraca/AAAA/Mes) do MESMO mes do relatorio
+    mais recente. Assim nenhum dia se perde se o relatorio for arquivado antes do robo rodar
+    (ex.: relatorio de sabado arquivado antes de segunda)."""
+    achados = {}
+    for f in _list_q(svc, "'%s' in parents and trashed=false" % ENTRADA_FOLDER_ID):
+        if _eh_arquivo_relatorio(f): achados[f["id"]] = (f["name"], True)
+    try:
+        for f in _list_q(svc, "name contains 'catraca' and name contains 'acessos' and trashed=false"):
+            if _eh_arquivo_relatorio(f) and f["id"] not in achados:
+                achados[f["id"]] = (f["name"], False)
+    except Exception as e:
+        sys.stderr.write("aviso: busca no arquivo da catraca falhou (%r) - segue so com a ENTRADA\n" % e)
+    meses = []
+    for nm, _ in achados.values():
+        if re.search(r'\d+\s*a\s*\d+', nm): continue          # relatorio de PERIODO
+        m = re.search(r'(\d{4})-(\d{2})-(\d{2})', nm)
+        if m: meses.append((int(m.group(1)), int(m.group(2))))
+    alvo = max(meses) if meses else None
+    out = []
+    for fid, (nm, na_entrada) in achados.items():
+        m = re.search(r'(\d{4})-(\d{2})-\d{2}', nm)
+        ym = (int(m.group(1)), int(m.group(2))) if m else None
+        if na_entrada or (alvo is not None and ym == alvo):
+            try:
+                out.append((nm, _download(svc, fid)))
+            except Exception as e:
+                sys.stderr.write("aviso: nao baixou %s (%r)\n" % (nm, e))
+    print("catraca: %d relatorio(s) lidos (ENTRADA + arquivo do mes %s)" % (len(out), alvo))
     return out
 
 # ---------- historico (catraca_hist.json) com mes de referencia ----------

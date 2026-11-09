@@ -56,7 +56,17 @@ def baixar_dados(svc):
     while not done:
         _, done = dl.next_chunk()
     conteudo = buf.getvalue().decode("utf-8")
-    json.loads(conteudo)  # valida
+    novo = json.loads(conteudo)  # valida
+    # preserva a catraca que ja esta no repo (o robo da catraca so reinjeta ~35 min depois;
+    # sem isso o painel ficava sem catraca nesse intervalo ou no dia em que o robo da catraca falhar)
+    try:
+        antigo = json.load(open("dados.json", encoding="utf-8"))
+        for k in ("catraca", "catracaMeta"):
+            if k in antigo and k not in novo:
+                novo[k] = antigo[k]
+        conteudo = json.dumps(novo, ensure_ascii=False, separators=(",", ":"))
+    except Exception:
+        pass
     with open("dados.json", "w", encoding="utf-8") as f:
         f.write(conteudo)
     print("[dados] dados.json baixado do Drive (%d bytes)." % len(conteudo))
