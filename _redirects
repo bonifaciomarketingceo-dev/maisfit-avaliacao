@@ -1,0 +1,10 @@
+# Seguranca 14/11/2026: arquivos internos do repositorio nao ficam publicos (o painel so usa index.html + dados.json)
+/README.md / 302
+/netlify.toml / 302
+/last_seen.json / 302
+/catraca_hist.json / 302
+/modelo_planilha.xlsx / 302
+/_headers / 302
+/_redirects / 302
+/scripts/* / 302
+/.github/* / 302
