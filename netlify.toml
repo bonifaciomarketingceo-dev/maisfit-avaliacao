@@ -2,3 +2,52 @@
 [build]
   publish = "."
   command = ""
+
+# Seguranca (14/11/2026): o painel so precisa de index.html + dados.json
+# (e cristal/index.html + cristal/dados.json). O resto do repositorio NAO deve ficar publico.
+[[redirects]]
+  from = "/README.md"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/last_seen.json"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/catraca_hist.json"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/modelo_planilha.xlsx"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/.github/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    X-Robots-Tag = "noindex, nofollow"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
