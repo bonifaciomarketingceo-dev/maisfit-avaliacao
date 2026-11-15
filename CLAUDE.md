@@ -1,0 +1,32 @@
+# Painel Mais Fit — guia para o Claude Code
+
+## Arquitetura
+- Repo público -> Cloudflare Pages -> painel.bonifaciomkt.com.br (`index.html` lê `dados.json`).
+- `publish.yml` (seg–sex 17:10 UTC): `scripts/fetch_and_build.py` baixa o `dados.json` do Drive e remonta a planilha mestre.
+- `catraca.yml` (seg–sex 17:45 UTC): `scripts/build_catraca.py` injeta catraca/catracaMeta/catracaHist.
+- `build_avaliacao.py`: gera o bloco de avaliações a partir da planilha AO VIVO (`build_meses`, `validar`). Ainda NÃO ligado ao publish.yml — ligar só depois de validar com a planilha real.
+- `cristal.yml` / `cristal/`: outro painel. NÃO mexer.
+
+## Regras de negócio (não mudar sem o Guilherme pedir)
+- Meta 50/mês. Professor R$10 por avaliação paga. R$50 = 1; R$100 = 2 (duas pessoas na linha).
+- Linha "Promoção" não soma no total (`promo.json`).
+- Dia sem lançamento = null (nunca 0).
+- Gênero pelo nome; perfil R = renovação, N = novo.
+- Nome de aluno NUNCA no repo, painel, dados.json ou aviso. Nomes só no CSV privado do Drive.
+- Catraca: pessoas únicas = total oficial do rodapé. Autorizados ("Aut. Xeu", "Aut. Cros") CONTAM. Fora: "func" e shell/Marcelo Xeu.
+- Virada de mês automática; mês fechado não muda.
+
+## Números de referência (teste de regressão, 15/11/2026)
+- Avaliação: Out 53, Nov 20 (15 M / 5 H · 11 R / 9 N · Edy 14 / Lucas 6).
+- Catraca: Nov 589 únicas até 13/11; Out 662 até 31/10; sumindo [534, 41, 144].
+
+## Como rodar e testar
+- `python -m pip install pytest openpyxl` depois `python -m pytest -q tests`
+- O workflow `test.yml` roda em todo push/PR. Os robôs só commitam com testes verdes.
+
+## NUNCA
+- Colocar nome de aluno no repo/painel.
+- Mexer no Cristal.
+- Apagar histórico de meses.
+- Commitar sem testes verdes.
+- Mudar regra de negócio sem pedido.
