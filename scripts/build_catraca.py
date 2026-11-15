@@ -313,6 +313,18 @@ def build_catraca(reports, prev_last_seen=None, prev_cat=None):   # reports: lis
         sys.stderr.write("aviso: recalculo do sumido falhou (%r) - mantem ultimo numero\n" % e)
     if oficiais >= 15:
         meta["sumindoStatus"] = "oficial"
+    # ---- CARTAO DO MES (15/11): pessoas unicas no mes (alunos + autorizados) + "atualizado ate" ----
+    try:
+        if last_seen:
+            pref = "%04d-%02d" % (ANO, MES)
+            meta["unicosMes"] = sum(1 for k, v in last_seen.items()
+                                    if k != REGRA_KEY and isinstance(v, dict)
+                                    and v.get("member", True) and str(v.get("last", "")).startswith(pref))
+        dias_ok = [int(k) for k, v in cat.items() if isinstance(v, dict) and v.get("rot") and not v.get("incompleto")]
+        if dias_ok:
+            meta["atualizadoAte"] = "%02d/%02d" % (max(dias_ok), MES)
+    except Exception as e:
+        sys.stderr.write("aviso: cartao do mes falhou (%r)\n" % e)
     return cat, meta, last_seen
 
 # ---------- Google Drive ----------
