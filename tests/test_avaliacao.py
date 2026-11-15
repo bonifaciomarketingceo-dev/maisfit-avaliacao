@@ -51,7 +51,7 @@ def test_novembro_bate_com_o_handoff():
     assert m["M"] == 15 and m["H"] == 5
     assert m["mat"] == 11 and m["novo"] == 9
     assert m["profs"] == {"Edy": 14, "Lucas": 6}
-    assert r["atual"] == "11"
+    assert r["atual"] == 11
 
 
 def test_novembro_dias_null_quando_sem_lancamento():
@@ -98,7 +98,7 @@ def test_validar_recusa_soma_errada():
 def test_validar_recusa_mes_fechado_que_mudou():
     anterior = {"meses": {"10": {"total": 50}}}
     r = ba.build_meses(outubro() + [linha("01/11/2026", 1)])
-    r["atual"] = "11"
+    r["atual"] = 11
     with pytest.raises(ValueError):
         ba.validar(r, anterior)
 

@@ -104,7 +104,7 @@ def build_meses(linhas, promo=None):
         dias_no_mes = _dias_no_mes(int(m["ano"]), mnum)
         m["dia"] = m["dia"][:dias_no_mes]
         saida[str(mnum)] = m
-    atual = max(saida, key=lambda k: int(k)) if saida else None
+    atual = int(max(saida, key=int)) if saida else None  # numero, igual ao dados.json
     return {"meses": saida, "atual": atual, "promo": promo or {}}
 
 
@@ -134,7 +134,7 @@ def validar(resultado, anterior=None):
         for k, antigo in anterior["meses"].items():
             if k in meses and antigo.get("total", 0) != meses[k]["total"]:
                 # mes fechado so pode mudar se a planilha mudou; aqui so avisamos via erro
-                if k != resultado.get("atual"):
+                if int(k) != int(resultado.get("atual") or 0):
                     raise ValueError("mes fechado %s mudou de %s para %s"
                                      % (k, antigo.get("total"), meses[k]["total"]))
     return True
@@ -163,3 +163,118 @@ def ler_planilha_drive(file_id, sa_key_json):
     wb = openpyxl.load_workbook(buf, data_only=True)
     ws = wb["Diário_Avaliações"] if "Diário_Avaliações" in wb.sheetnames else wb.worksheets[0]
     return [list(r) for r in ws.iter_rows(min_row=2, values_only=True)]
+
+
+# ---------------------------------------------------------------------------
+# Meses congelados (fev-jun): a planilha nao tem o detalhe completo desses meses
+# (fev nem tem dias; mar-jun nao tem professores/genero). O painel mostra o que
+# esta em meses_fixos.json, copiado do dados.json de 15/11/2026.
+# ---------------------------------------------------------------------------
+CAMPOS = ("total", "M", "H", "mat", "novo", "profs", "dia", "det", "nome", "ano", "temDia")
+
+
+def aplicar_fixos(resultado, fixos):
+    """Troca os meses congelados pela versao fixa. Avisa se a planilha discordar no total/dias."""
+    avisos = []
+    meses = resultado["meses"]
+    for k, fixo in fixos.items():
+        planilha = meses.get(k)
+        if planilha is not None:
+            if planilha["total"] != fixo["total"]:
+                avisos.append("mes %s congelado: planilha total %s, fixo %s"
+                              % (k, planilha["total"], fixo["total"]))
+            elif fixo.get("dia") and planilha["dia"] != fixo["dia"]:
+                avisos.append("mes %s congelado: dias da planilha diferem do fixo" % k)
+        meses[k] = fixo
+    resultado["meses"] = {k: meses[k] for k in sorted(meses, key=int)}
+    resultado["atual"] = int(max(resultado["meses"], key=int)) if resultado["meses"] else None
+    return avisos
+
+
+def comparar(gerado, atual):
+    """Compara meses campo a campo. Retorna lista de diferencas (texto simples)."""
+    difs = []
+    ga, aa = gerado.get("meses", {}), atual.get("meses", {})
+    for k in sorted(set(ga) | set(aa), key=int):
+        if k not in ga:
+            difs.append("mes %s: falta no gerador" % k)
+            continue
+        if k not in aa:
+            difs.append("mes %s: so existe no gerador" % k)
+            continue
+        for c in CAMPOS:
+            if ga[k].get(c) != aa[k].get(c):
+                difs.append("mes %s campo %s: atual=%s gerador=%s"
+                            % (k, c, json.dumps(aa[k].get(c), ensure_ascii=False)[:120],
+                               json.dumps(ga[k].get(c), ensure_ascii=False)[:120]))
+    if gerado.get("atual") != atual.get("atual"):
+        difs.append("atual: %s x %s" % (atual.get("atual"), gerado.get("atual")))
+    if gerado.get("promo") != atual.get("promo"):
+        difs.append("promo diferente")
+    return difs
+
+
+PLANILHA_ID = "11PaYnqjGvX_roDyeCM0VgbcCKOAn5WaIOMkgOu2D-Nw"
+
+
+def rodar_sombra(linhas, raiz="."):
+    """
+    MODO SOMBRA: gera, valida e compara, gravando SO dados_sombra.json e status.json.
+    Nunca toca no dados.json publicado.
+    """
+    import os
+    p = lambda n: os.path.join(raiz, n)  # noqa: E731
+    atual = json.load(open(p("dados.json"), encoding="utf-8"))
+    promo = json.load(open(p("promo.json"), encoding="utf-8"))
+    fixos = json.load(open(p("meses_fixos.json"), encoding="utf-8"))
+    res = build_meses(linhas, promo=promo)
+    avisos = aplicar_fixos(res, fixos)
+    erro = None
+    try:
+        validar_saida(res)
+    except ValueError as e:
+        erro = str(e)
+    difs = comparar(res, atual)
+    with open(p("dados_sombra.json"), "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, separators=(",", ":"))
+    ultimo_dia = None
+    if res["atual"]:
+        m = res["meses"][str(res["atual"])]
+        dias = [i + 1 for i, q in enumerate(m["dia"]) if q]
+        if dias:
+            ultimo_dia = "%02d/%02d" % (dias[-1], int(res["atual"]))
+    status = {
+        "modo": "sombra",
+        "geradoEm": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "avaliacoesAte": ultimo_dia,
+        "catracaAte": (atual.get("catracaMeta") or {}).get("atualizadoAte"),
+        "igualAoPublicado": not difs and not erro,
+        "diferencas": difs,
+        "avisos": avisos,
+        "erro": erro,
+    }
+    with open(p("status.json"), "w", encoding="utf-8") as f:
+        json.dump(status, f, ensure_ascii=False, indent=1)
+    return status
+
+
+def validar_saida(res):
+    """Validacao que tolera meses congelados sem dias (fev)."""
+    for k, m in res["meses"].items():
+        dias = [q for q in (m.get("dia") or []) if q]
+        if dias and sum(dias) != m["total"]:
+            raise ValueError("mes %s: soma dos dias (%d) != total (%d)" % (k, sum(dias), m["total"]))
+        det = m.get("det") or {}
+        if det and sum(d["q"] for d in det.values()) != m["total"]:
+            raise ValueError("mes %s: soma do detalhe != total" % k)
+    return True
+
+
+if __name__ == "__main__":
+    import os
+    import sys
+    chave = os.environ.get("GOOGLE_SA_KEY", "").strip()
+    if not chave:
+        sys.exit("GOOGLE_SA_KEY ausente")
+    st = rodar_sombra(ler_planilha_drive(PLANILHA_ID, chave))
+    print(json.dumps(st, ensure_ascii=False, indent=1))

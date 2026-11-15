@@ -145,6 +145,16 @@ def subir_excel(svc, caminho):
 def main():
     svc = drive_service()
     baixar_dados(svc)          # painel (obrigatorio)
+    try:                       # MODO SOMBRA: so grava dados_sombra.json/status.json, nao publica
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import build_avaliacao as ba
+        st = ba.rodar_sombra(ba.ler_planilha_drive(ba.PLANILHA_ID, os.environ["GOOGLE_SA_KEY"]))
+        print("[sombra] igual ao publicado: %s | %d diferencas | erro: %s"
+              % (st["igualAoPublicado"], len(st["diferencas"]), st["erro"]))
+        for d in st["diferencas"]:
+            print("[sombra]  - " + d)
+    except Exception as e:
+        print("[sombra] AVISO: modo sombra falhou: %r" % e)
     try:                       # excel (best-effort)
         out = remontar_excel()
         subir_excel(svc, out)
