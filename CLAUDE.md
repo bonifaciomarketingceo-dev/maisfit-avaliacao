@@ -19,6 +19,12 @@
 - Fev–Jun ficam congelados em `meses_fixos.json` (a planilha não tem professores/gênero desses meses).
 - Gerador em MODO SOMBRA: grava `dados_sombra.json` e `status.json`, não publica. Ligar à publicação só com aprovação do Guilherme.
 
+## Trava automática da planilha (pedido do Guilherme, 15/11/2026)
+- Antes de publicar o gerador confere a planilha: dia com "Verificar" na coluna T, data no futuro, mais de 8 avaliações num dia, ou total de mês menor que o já publicado => NÃO publica e avisa.
+- O aviso diz em linguagem simples o DIA, a linha da FOLHA DE PAPEL (coluna Q "Origem na folha", só leitura; o código nunca escreve nela) e o MOTIVO. Nunca "linha N da planilha". Sem coluna Q: só dia e motivo.
+- Não corrige sozinho. Sem leitura dupla da folha (decisão do Guilherme).
+- Hoje roda só em modo sombra: resultado em `status.json` (`bloqueado`, `avisosTrava`).
+
 ## Números de referência (teste de regressão, 15/11/2026)
 - Avaliação: Out 53, Nov 20 (15 M / 5 H · 11 R / 9 N · Edy 14 / Lucas 6).
 - Catraca: Nov 589 únicas até 13/11; Out 662 até 31/10; sumindo [534, 41, 144].

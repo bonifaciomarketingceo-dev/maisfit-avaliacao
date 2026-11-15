@@ -218,10 +218,59 @@ def comparar(gerado, atual):
     return difs
 
 
+
+# ---------------------------------------------------------------------------
+# TRAVA AUTOMATICA DA PLANILHA (handoff 15/11/2026, pedido do Guilherme)
+# Se algo estiver estranho, NAO publica e avisa em linguagem simples:
+# dia, linha da folha de papel (coluna Q, so leitura) e motivo. Nunca corrige sozinho.
+# ---------------------------------------------------------------------------
+C_ORIGEM = 16  # coluna Q "Origem na folha" (o codigo so LE, nunca escreve)
+MAX_POR_DIA = 8
+
+
+def _aviso_dia(d, origem, motivo):
+    dia = "%02d/%02d" % (d.day, d.month)
+    if origem:
+        return "Parei a atualização. Dia %s (%s): %s. Confira essa linha na folha." % (dia, origem, motivo)
+    return "Parei a atualização. Dia %s: %s. Confira as linhas desse dia na folha." % (dia, motivo)
+
+
+def conferir_planilha(linhas, publicado=None, hoje=None, meses_congelados=()):
+    """Retorna lista de avisos (texto simples). Lista vazia = pode publicar."""
+    hoje = hoje or (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=3)).date()
+    avisos = []
+    for row in linhas:
+        if not row or len(row) <= C_DATA:
+            continue
+        d = _parse_data(row[C_DATA])
+        if d is None:
+            continue
+        origem = ""
+        if len(row) > C_ORIGEM and row[C_ORIGEM] not in (None, "", 0):
+            origem = str(row[C_ORIGEM]).strip()
+        conf = str(row[C_CONF]).strip().lower() if len(row) > C_CONF and row[C_CONF] else ""
+        qtd = _int(row[C_QTD]) if len(row) > C_QTD else None
+        if conf == "verificar":
+            avisos.append(_aviso_dia(d, origem, "a conta não fecha (a conferência da planilha marcou \"Verificar\")"))
+        if qtd and d > hoje:
+            avisos.append(_aviso_dia(d, origem, "tem avaliação lançada numa data que ainda não chegou"))
+        if qtd and qtd > MAX_POR_DIA:
+            avisos.append(_aviso_dia(d, origem, "%d avaliações num dia só, mais que o normal (até %d)" % (qtd, MAX_POR_DIA)))
+    if publicado:
+        novo = build_meses(linhas)["meses"]
+        for k, m in novo.items():
+            if int(k) in meses_congelados:
+                continue
+            antes = (publicado.get("meses", {}).get(k) or {}).get("total")
+            if antes is not None and m["total"] < antes:
+                avisos.append("Parei a atualização. %s: o total caiu de %d para %d. Confira os lançamentos do mês na folha."
+                              % (m["nome"], antes, m["total"]))
+    return avisos
+
 PLANILHA_ID = "11PaYnqjGvX_roDyeCM0VgbcCKOAn5WaIOMkgOu2D-Nw"
 
 
-def rodar_sombra(linhas, raiz="."):
+def rodar_sombra(linhas, raiz=".", hoje=None):
     """
     MODO SOMBRA: gera, valida e compara, gravando SO dados_sombra.json e status.json.
     Nunca toca no dados.json publicado.
@@ -231,6 +280,8 @@ def rodar_sombra(linhas, raiz="."):
     atual = json.load(open(p("dados.json"), encoding="utf-8"))
     promo = json.load(open(p("promo.json"), encoding="utf-8"))
     fixos = json.load(open(p("meses_fixos.json"), encoding="utf-8"))
+    trava = conferir_planilha(linhas, publicado=atual, hoje=hoje,
+                              meses_congelados={int(k) for k in fixos})
     res = build_meses(linhas, promo=promo)
     avisos = aplicar_fixos(res, fixos)
     erro = None
@@ -252,6 +303,8 @@ def rodar_sombra(linhas, raiz="."):
         "geradoEm": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "avaliacoesAte": ultimo_dia,
         "catracaAte": (atual.get("catracaMeta") or {}).get("atualizadoAte"),
+        "bloqueado": bool(trava),
+        "avisosTrava": trava,
         "igualAoPublicado": not difs and not erro,
         "diferencas": difs,
         "avisos": avisos,
