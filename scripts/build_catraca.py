@@ -407,6 +407,51 @@ def read_hist():
         return "2026-10", raw   # formato antigo = outubro
     return None, {}
 
+def read_meses():
+    """Historico congelado dos meses (VIRADA AUTOMATICA, 15/11): {"AAAA-MM": {"catraca":..,"catracaMeta":..}}."""
+    try:
+        raw = json.load(open(HIST_PATH, encoding="utf-8"))
+        m = raw.get("meses") if isinstance(raw, dict) else None
+        return m if isinstance(m, dict) else {}
+    except Exception:
+        return {}
+
+def _ym_anterior(ano, mes):
+    return (ano - 1, 12) if mes == 1 else (ano, mes - 1)
+
+def atrasados_mes_anterior(reports, meses):
+    """Relatorio do mes ANTERIOR que chegou depois da virada (ex.: dia 30 chegando em 01/12):
+    entra no mes certo do historico. So acrescenta dia que ainda nao existe."""
+    global MES, ANO
+    pa, pm = _ym_anterior(ANO, MES)
+    pym = "%04d-%02d" % (pa, pm)
+    if pym not in meses: return 0
+    ent = meses[pym]; catp = ent.setdefault("catraca", {}); add = 0
+    salvo = (ANO, MES); ANO, MES = pa, pm
+    try:
+        for name, data in reports:
+            if not is_catraca_report(name): continue
+            try:
+                oficial, times = parse_report(name, data)
+            except Exception:
+                continue
+            if oficial is None: continue
+            dts = sorted(set(t.date() for t in times if t.year == pa))
+            if len(dts) > 1: continue
+            if len(dts) == 1: d = dts[0]
+            else:
+                day = fn_day(name)
+                if day is None: continue
+                d = datetime.date(pa, pm, day)
+            if d.month != pm or str(d.day) in catp: continue
+            catp[str(d.day)] = build_day_entry(d, oficial, times); add += 1
+        if add:
+            dias_ok = [int(k) for k, v in catp.items() if isinstance(v, dict) and v.get("rot") and not v.get("incompleto")]
+            if dias_ok: ent.setdefault("catracaMeta", {})["atualizadoAte"] = "%02d/%02d" % (max(dias_ok), pm)
+    finally:
+        ANO, MES = salvo
+    return add
+
 def main():
     global MES, ANO
     if len(sys.argv)>=3 and sys.argv[1]=="--local":
@@ -459,7 +504,15 @@ def main():
     seed_keys = _seed_keys()
     hist_novo = {k: v for k, v in cat.items()
                  if k not in seed_keys and isinstance(v, dict) and v.get("oficial")}
-    json.dump({"ym": cur_ym, "dias": hist_novo}, open(HIST_PATH, "w", encoding="utf-8"),
+    # VIRADA DE MES AUTOMATICA: guarda o estado do mes corrente; meses anteriores ficam congelados
+    meses = read_meses()
+    try:
+        n_atr = atrasados_mes_anterior(reports, meses)
+        if n_atr: print("mes anterior: +%d dia(s) atrasado(s)" % n_atr)
+    except Exception as e:
+        sys.stderr.write("aviso: atrasados do mes anterior falhou (%r)\n" % e)
+    meses[cur_ym] = {"catraca": cat, "catracaMeta": meta}
+    json.dump({"ym": cur_ym, "dias": hist_novo, "meses": meses}, open(HIST_PATH, "w", encoding="utf-8"),
               ensure_ascii=False, separators=(",",":"))
     print("catraca_hist.json (%s): %d dias oficiais" % (cur_ym, len(hist_novo)))
 
@@ -473,6 +526,7 @@ def main():
     if dados is not None:
         dados["catraca"]=cat
         dados["catracaMeta"]=meta
+        dados["catracaHist"]={k: v for k, v in meses.items() if k != cur_ym}   # meses fechados (fixos)
         json.dump(dados, open(dados_path,"w",encoding="utf-8"),
                   ensure_ascii=False, separators=(",",":"))
         print("dados.json atualizado com catraca: %d dias, status=%s sumindo=%s" %
