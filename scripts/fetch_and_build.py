@@ -61,7 +61,7 @@ def baixar_dados(svc):
     # sem isso o painel ficava sem catraca nesse intervalo ou no dia em que o robo da catraca falhar)
     try:
         antigo = json.load(open("dados.json", encoding="utf-8"))
-        for k in ("catraca", "catracaMeta"):
+        for k in ("catraca", "catracaMeta", "catracaHist"):
             if k in antigo and k not in novo:
                 novo[k] = antigo[k]
         conteudo = json.dumps(novo, ensure_ascii=False, separators=(",", ":"))
