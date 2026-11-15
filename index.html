@@ -196,12 +196,15 @@ function render(m){
   const faltam = Math.max(0, META-d.total);
   const dim = daysInMonth(m);
   let dias='';
+  // REGRA (15/11): no mes ATUAL, so vira X vermelho o dia que ficou ANTES de um dia com avaliacao confirmada;
+  // do ultimo dia confirmado em diante (ou dia marcado em d.pend) fica traco cinza ate chegar um dia posterior.
+  let lastDia=0; for(let j=0;j<dim;j++){ if(d.dia[j]>0) lastDia=j+1; }
   for(let i=1;i<=dim;i++){
     const q=d.dia[i-1];
     const tem = q && q>0;
     let inner,cls,click='';
     if(tem){ inner=q; cls='tem'; click=`onclick="toggleDay(${m},${i})"`; }
-    else if(d.temDia && isPast(m,i)){ inner='✕'; cls='xzero'; }
+    else if(d.temDia && isPast(m,i) && (m!==DATA.atual || i<lastDia) && !(d.pend||[]).includes(i)){ inner='✕'; cls='xzero'; }
     else { inner='—'; cls='zero'; }
     const sel=(selDay===i)?' sel':'';
     dias += `<div class="dia${tem?' clic':''}${sel}" ${click}><div class="d">${i}</div><div class="q ${cls}">${inner}</div></div>`;
