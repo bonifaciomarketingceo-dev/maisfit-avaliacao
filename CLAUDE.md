@@ -15,6 +15,9 @@
 - Nome de aluno NUNCA no repo, painel, dados.json ou aviso. Nomes só no CSV privado do Drive.
 - Catraca: pessoas únicas = total oficial do rodapé. Autorizados ("Aut. Xeu", "Aut. Cros") CONTAM. Fora: "func" e shell/Marcelo Xeu.
 - Virada de mês automática; mês fechado não muda.
+- Professor com zero avaliações no mês NÃO aparece na lista do mês (decisão 15/11/2026; só visual, totais e pagamento iguais). Aplicado pelo gerador.
+- Fev–Jun ficam congelados em `meses_fixos.json` (a planilha não tem professores/gênero desses meses).
+- Gerador em MODO SOMBRA: grava `dados_sombra.json` e `status.json`, não publica. Ligar à publicação só com aprovação do Guilherme.
 
 ## Números de referência (teste de regressão, 15/11/2026)
 - Avaliação: Out 53, Nov 20 (15 M / 5 H · 11 R / 9 N · Edy 14 / Lucas 6).

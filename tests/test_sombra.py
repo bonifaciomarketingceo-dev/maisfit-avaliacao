@@ -38,12 +38,12 @@ def test_sombra_nao_mexe_no_dados_json(tmp_path):
     assert os.path.exists(os.path.join(raiz, "status.json"))
 
 
-def test_sombra_fev_a_nov_iguais_exceto_setembro_edy_zero(tmp_path):
+def test_sombra_fev_a_nov_iguais_ao_publicado(tmp_path):
     st = ba.rodar_sombra(linhas_fixture(), preparar(tmp_path))
     assert st["erro"] is None
     assert st["avisos"] == []
-    # unica diferenca conhecida: setembro tem "Edy": 0 no dados.json (gerador omite zeros)
-    assert len(st["diferencas"]) == 1 and st["diferencas"][0].startswith("mes 9 campo profs")
+    # "Edy": 0 de setembro e omitido de proposito (decisao 15/11/2026), nao conta como diferenca
+    assert st["diferencas"] == [] and st["igualAoPublicado"] is True
     assert st["avaliacoesAte"] == "13/11"
     assert st["catracaAte"] == "13/11"
 
@@ -64,3 +64,11 @@ def test_catraca_de_referencia_intacta():
     assert meta["sumindo"] == [534, 41, 144]
     html = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
     assert '"unicosMes":662,"atualizadoAte":"31/10"' in html
+
+
+def test_setembro_sem_professor_zero(tmp_path):
+    ba.rodar_sombra(linhas_fixture(), preparar(tmp_path))
+    s = json.load(open(tmp_path / "dados_sombra.json", encoding="utf-8"))
+    assert s["meses"]["9"]["total"] == 33
+    assert "Edy" not in s["meses"]["9"]["profs"]
+    assert s["meses"]["10"]["profs"]["Edy"] == 22

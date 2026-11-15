@@ -203,7 +203,11 @@ def comparar(gerado, atual):
             difs.append("mes %s: so existe no gerador" % k)
             continue
         for c in CAMPOS:
-            if ga[k].get(c) != aa[k].get(c):
+            va, vg = aa[k].get(c), ga[k].get(c)
+            if c == "profs" and isinstance(va, dict):
+                # decisao 15/11/2026: professor com zero nao aparece (so visual, numeros iguais)
+                va = {n: q for n, q in va.items() if q}
+            if vg != va:
                 difs.append("mes %s campo %s: atual=%s gerador=%s"
                             % (k, c, json.dumps(aa[k].get(c), ensure_ascii=False)[:120],
                                json.dumps(ga[k].get(c), ensure_ascii=False)[:120]))
