@@ -27,6 +27,7 @@ MES = None          # detectado automaticamente em main() (mes do relatorio mais
 ANO = None          # detectado automaticamente em main()
 DADOS_PATH = "dados.json"
 LAST_SEEN_PATH = "last_seen.json"   # memoria do ultimo dia de cada aluno (fica no repo)
+REGRA_KEY = "__regra__"; REGRA_VAL = "autorizado_conta_v2"   # marca da regra na memoria
 HIST_PATH = "catraca_hist.json"     # historico dos dias oficiais (14+); arquivo proprio que o
                                     # publish.yml da avaliacao NAO sobrescreve (so o dados.json e sobrescrito)
 
@@ -69,7 +70,7 @@ def _display(raw):
 def _is_nonmember(raw):
     r = _strip_accents((raw or "").casefold())
     if "func" in r: return True
-    if "aut x" in r or "autorizado" in r: return True
+    # 15/11 (Xeu): autorizados ("Aut. Xeu") CONTAM como alunos na catraca. Nao sao "nao-membro".
     if "marcelo" in r and "xeu" in r: return True
     if re.search(r"\bshell\b", r): return True
     return False
@@ -134,10 +135,15 @@ def compute_sumido(reports, prev_last_seen=None):
     # A chave de cada aluno e um hash do nome normalizado (sem PII).
     people = {}   # hash -> {"last":date, "nonmember":bool}
     if prev_last_seen:
+        # REGRA 15/11 (Xeu): autorizados contam como alunos. Memoria gravada com a regra antiga
+        # (sem a marca REGRA_KEY) pode ter autorizado marcado como "nao aluno" -> zera essas marcas;
+        # funcionarios/shell sao marcados de novo pelos relatorios lidos abaixo.
+        regra_nova = (prev_last_seen.get(REGRA_KEY) == REGRA_VAL)
         for k,v in prev_last_seen.items():
+            if k == REGRA_KEY: continue
             try:
                 people[k] = {"last": datetime.date.fromisoformat(v["last"]),
-                             "nonmember": (not v.get("member",True))}
+                             "nonmember": (not v.get("member",True)) if regra_nova else False}
             except Exception:
                 pass
     for name, data in reports:
@@ -165,6 +171,7 @@ def compute_sumido(reports, prev_last_seen=None):
         else: r+=1
     last_seen = {h:{"last":p["last"].isoformat(),"member":(not p["nonmember"])}
                  for h,p in people.items()}
+    last_seen[REGRA_KEY] = REGRA_VAL
     return [g,y,r], last_seen, ref
 
 # ---------- parsing de um relatorio (Excel ou PDF) ----------
@@ -449,7 +456,7 @@ def main():
         json.dump(last_seen, open(LAST_SEEN_PATH, "w", encoding="utf-8"),
                   ensure_ascii=False, separators=(",",":"))
         print("last_seen.json atualizado: %d alunos, sumindo=%s" %
-              (len(last_seen), meta["sumindo"]))
+              (len(last_seen)-1, meta["sumindo"]))
 
     if dados is not None:
         dados["catraca"]=cat
