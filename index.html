@@ -249,7 +249,7 @@ function renderPromo(promo){
     +`<div class="grid">${cards}</div>`;
 }
 
-fetch('./dados.json?v='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;render(DATA.atual);renderPromo(DATA.promo); for(var k in CAT)delete CAT[k]; if(d.catraca){for(var k in d.catraca)CAT[k]=d.catraca[k];} if(d.catracaMeta){for(var k in d.catracaMeta)CATMETA[k]=d.catracaMeta[k];} try{acStrip();renderCatAgg();acMesFix();if(CAT[acLatest()])acRender(acLatest());}catch(e){} AC_ATUAL={ym:acYM(CAT),catraca:acCopia(CAT),catracaMeta:acCopia(CATMETA)}; AC_SEL=AC_ATUAL.ym; acMesesBtns(); }).catch(e=>{var a=document.getElementById('app');if(a)a.innerHTML='<div style="padding:24px;text-align:center;color:#AFC0E6">Não foi possível carregar os dados agora.</div>';});
+fetch('./dados.json?v='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;render(DATA.atual);renderPromo(DATA.promo); for(var k in CAT)delete CAT[k]; if(d.catraca){for(var k in d.catraca)CAT[k]=d.catraca[k];} if(d.catracaMeta){for(var k in d.catracaMeta)CATMETA[k]=d.catracaMeta[k];} try{acStrip();renderCatAgg();acMesFix();if(CAT[acLatest()])acRender(acLatest());}catch(e){} if(d.catracaHist){for(var k in d.catracaHist){if(d.catracaHist[k]&&d.catracaHist[k].catraca)CAT_HIST[k]=d.catracaHist[k];}} AC_ATUAL={ym:acYM(CAT),catraca:acCopia(CAT),catracaMeta:acCopia(CATMETA)}; AC_SEL=AC_ATUAL.ym; acMesesBtns(); }).catch(e=>{var a=document.getElementById('app');if(a)a.innerHTML='<div style="padding:24px;text-align:center;color:#AFC0E6">Não foi possível carregar os dados agora.</div>';});
 </script>
 
 <div style="text-align:center;margin:24px 0 14px;padding-top:18px;border-top:1px solid var(--borda)">
